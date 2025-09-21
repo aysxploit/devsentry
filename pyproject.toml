@@ -1,0 +1,5 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
