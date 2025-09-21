@@ -1,143 +1,44 @@
-# 🛡️ DevSentry
+# DevSentry (Python 3.13 Modernized)
 
-**Live Demo:** [Streamlit - DevSentry](http://94.16.31.129:8505/)  
-**Demo Video:** _Pending Submission_
-
----
-
-## Overview
-
-**DevSentry** is an end-to-end agentic AI system that acts as a senior developer's assistant for real-time **error triage and auto-fix generation**. Built with FastAPI, Streamlit, LangChain, and Gemini 1.5 Flash, it provides intelligent runtime diagnostics and code fix suggestions across Python, JS, C++, and Java.
-
----
-
-## Use Case & Impact
-
-Modern development workflows suffer from low MTTR (Mean Time To Repair). DevSentry solves this by analyzing logs or error messages and generating actionable fix patches with reasoning.
-
-**Impact**:
-- Speeds up debugging for developers.
-- Ideal for DevOps pipelines.
-- Scales across multiple languages.
-
----
-
-## Architecture Diagram
-
-```plaintext
-+----------------+     HTTP     +-------------------+     LangChain     +------------------+
-|  Streamlit UI  | <==========> | FastAPI Controller | <==============> | Gemini LLM Agent |
-+----------------+              +-------------------+                   +------------------+
-     ^                                 |
-     |                                 v
-     |                        +-------------------+
-     |                        | GitHub API Client |
-     |                        +-------------------+
-     |
-     v
-+------------------+
-| LangSmith Tracer |
-+------------------+
-```
-
----
-
-## Agent Prompt Design
-
-DevSentry uses LangChain's `initialize_agent()` with a ReAct-based reasoning agent on Gemini 1.5. The prompt includes:
-- Language context
-- Error traceback
-- Code snippet
-- Instructions to isolate root cause and generate fix
-
-_Example Prompt Template_:
-```
-You are a senior software engineer. Given the traceback and code, identify the issue and generate a patch-ready fix. Explain why.
-```
-
----
+FastAPI backend + Streamlit UI for lightweight code scanning, AI-assisted triage, and conversation around findings.
+This version targets **Python 3.13**, updates dependencies, and adopts **Pydantic v2** models and **FastAPI 0.115** style.
 
 ## Features
+- `/health` endpoint for readiness checks.
+- `/scan` endpoint: uploads code/text and returns security findings (simple secret/credential heuristics + TODO/FIXME).
+- `/chat` endpoint: optional Gemini-backed assistant to summarize findings or suggest remediations.
+- Streamlit UI: upload files/folders (zips), see findings, chat about them.
+- Dockerfile based on `python:3.13-slim`.
 
-- Multi-language runtime error support
-- Auto classification of severity (Low to Critical)
-- Structured fix generator
-- LangSmith trace visualization
-- GitHub API integration (search relevant issues)
-
----
-
-## Tooling / APIs Used
-
-- `Gemini 1.5 Flash` via LangChain
-- `GitHub REST API` (Issue similarity + references)
-- `LangSmith` (observability)
-- `FastAPI`, `Streamlit`
-
----
-
-## Observability
-
-- LangSmith Tracing (`LANGCHAIN_TRACING_V2`)
-- Custom `uvicorn` structured logging (JSON)
-- Logs persisted and visualized in LangSmith Dashboard
-
----
-
-## Testing
-
-Test suite located in `tests/`:
-- `test_agent.py`: Unit test on error prompts
-- `test_utils.py`: Unit test for utility transformers
-- `test_api.py`: Integration test for `/analyze` endpoint
-
-Run all tests:
+## Run (dev)
 ```bash
-pytest tests/
-```
-
----
-
-## Deployment
-
-### Local Development
-```bash
-docker-compose up --build
-```
-
-### Manual
-```bash
-python3 -m venv venv && source venv/bin/activate
+python -m venv .venv && . .venv/bin/activate
 pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
-
-Streamlit:
+UI:
 ```bash
-streamlit run ui/dashboard.py
+streamlit run ui/streamlit_app.py
 ```
 
----
-
-## Directory Structure
-
+## Env
+Create `.env` in project root:
 ```
-devsentry/
-├── app/
-│   ├── main.py         # FastAPI app
-│   ├── agent.py        # LangChain agent
-│   ├── fixgen.py       # Patch suggestion logic
-│   ├── triage.py       # Severity classification
-│   └── utils.py        # Support utilities
-├── ui/
-│   └── dashboard.py    # Streamlit frontend
-├── tests/              # Pytest-based unit/integration tests
-├── Dockerfile
-├── docker-compose.yml
-└── README.md
+GEMINI_API_KEY=
+BACKEND_URL=http://localhost:8000
 ```
 
----
+## Docker
+```bash
+docker build -t devsentry:py313 .
+docker run --rm -p 8000:8000 devsentry:py313
+```
 
-## Authors
-- **TwilightAshen3196**
+## Tests
+```bash
+pytest -q
+```
+
+## Notes
+- AI is optional; scanning works offline.
+- This modernization preserves the intended DevSentry workflow while upgrading to Python 3.13-compatible libs.
