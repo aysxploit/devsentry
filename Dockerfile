@@ -1,17 +1,15 @@
-# Use official Python image
-FROM python:3.11-slim
+FROM python:3.13-slim
 
-# Set working directory
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
 WORKDIR /app
-
-# Copy files
-COPY . /app
-
-# Install dependencies
+COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose Streamlit port
-EXPOSE 8501
+COPY app ./app
+COPY ui ./ui
+COPY README.md ./README.md
 
-# Default command: run backend and frontend via start.sh
-CMD ["bash", "start.sh"]
+EXPOSE 8000
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
