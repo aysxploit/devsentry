@@ -1,4 +1,4 @@
-# DevSentry (Python 3.13 Modernized)
+# DevSentry
 
 FastAPI backend + Streamlit UI for lightweight code scanning, AI-assisted triage, and conversation around findings.
 This version targets **Python 3.13**, updates dependencies, and adopts **Pydantic v2** models and **FastAPI 0.115** style.
